@@ -43,7 +43,7 @@ module.exports = {
 
     loginAdmin: async (req, res) => {
         try {
-            // console.log("hi")
+            console.log("hi")
             const { admin_email, admin_password } = req.body;
             console.log("email:", admin_email, admin_password)
             if (!admin_email || !admin_password) {
@@ -51,6 +51,7 @@ module.exports = {
             }
 
             const admin = await Admin.findOne({ admin_email });
+            console.log(admin)
             console.log("admin work", !admin)
 
             if (!admin) {
@@ -60,6 +61,7 @@ module.exports = {
             // Checking req.body password  vs Encryption password 
             const isCompare = await compare(admin_password, admin.admin_password);
             if (!isCompare) {
+                console.log("not compare")
                 throw new Error("Sorry, invalid password for admin/managers.");
             }
 
@@ -152,6 +154,21 @@ module.exports = {
         }
 
     },
+    getSuperUser : async (req, res) => {
+        try {
+         const allUser = await Admin.find()
+         console.log(allUser)
+        // if db its empty
+        if(!allUser){
+            throw new Error ("Db its empty")
+        }
+         
+          return res.status(200).json({ message: "Get all user successful" });
+        } catch (error) {
+          console.error(error);
+          return res.status(500).json({ message: "Get all user failed" });
+        }
+      },
     // Reset_password: async (req, res) => {
     //     try {
     //         const { admin_email, admin_password } = req.body;
