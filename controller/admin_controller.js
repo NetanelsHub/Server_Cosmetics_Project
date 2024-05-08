@@ -8,7 +8,7 @@ module.exports = {
     AddFirstAdmin: async (req, res) => {
         try {
             if (!isFirstAdminAdded) {
-                
+
                 // Check if there is already an admin
                 const isAdmin = await Admin.findOne({ role: "Admin" });
                 if (!isAdmin) {
@@ -90,9 +90,9 @@ module.exports = {
     },
     addASuperUser: async (req, res) => {
         try {
-            const { admin_email,  admin_password,admin_role ,admin_fName ,admin_lName } = req.body;
+            const { admin_email, admin_password, admin_role, admin_fName, admin_lName } = req.body;
             // console.log(role)
-            if (!admin_email || ! admin_password || !admin_role || !admin_fName || !admin_lName) {
+            if (!admin_email || !admin_password || !admin_role || !admin_fName || !admin_lName) {
                 throw new Error("You need to insert all credentials.");
             }
 
@@ -115,9 +115,9 @@ module.exports = {
             const newAdminManager = new Admin({
                 admin_email: admin_email,
                 admin_password: hashedPassword, // Store the hashed password
-                admin_role: admin_role ,
+                admin_role: admin_role,
                 admin_fName: admin_fName,
-                admin_lName :admin_lName
+                admin_lName: admin_lName
             });
 
             // Save the document to the database
@@ -136,7 +136,7 @@ module.exports = {
             }
         }
     },
-    
+
     autoAdmin: async (req, res) => {
         try {
             const { id } = req.payload
@@ -154,21 +154,32 @@ module.exports = {
         }
 
     },
-    getSuperUser : async (req, res) => {
+    getSuperUser: async (req, res) => {
         try {
-         const allUser = await Admin.find()
-         console.log(allUser)
-        // if db its empty
-        if(!allUser){
-            throw new Error ("Db its empty")
-        }
-         
-          return res.status(200).json({ message: "Get all user successful" });
+            const allUser = await Admin.find()
+            console.log(allUser)
+            // if db its empty
+            if (!allUser) {
+                throw new Error("Db its empty")
+            }
+
+            return res.status(200).json({ message: "Get all user successful", allUser });
         } catch (error) {
-          console.error(error);
-          return res.status(500).json({ message: "Get all user failed" });
+            console.error(error);
+            return res.status(500).json({ message: "Get all user failed" });
         }
-      },
+    },
+    deleteSuperUser: async (req, res) => {
+        try {
+            console.log(req.params.id)
+            await Admin.findByIdAndDelete(req.params.id)
+            
+            return res.status(200).json({ message: "user delete successful"});
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "user delete failed"});
+        }
+    },
     // Reset_password: async (req, res) => {
     //     try {
     //         const { admin_email, admin_password } = req.body;
@@ -203,22 +214,5 @@ module.exports = {
     //         return res.status(500).json({ error: error.message });
     //     }
     // },
-    // logOutAdmin:async (req,res )=>{
-    //     try {
-    //         console.log("hi")
-    //         // console.log(req.payload)
-    //         // const {id} = req.payload
-    //         // const userId = req.headers.authorization
-    //         const userId = req.headers.authorization
-    //         console.log(userId)
-    //         // const decode =jwt.verify(userId,process.env.JWT_SECRET)
-    //         console.log(userId,"aaa")
-
-    //     } catch (error) {
-
-    //     }
-    // }
-    //1.
-    //1.1 delete the token
-    //
+   
 };
