@@ -1,0 +1,27 @@
+controller templed
+-----------------------------------------------------------------------
+
+const Admin = require("");
+
+module.exports = {
+  name: async (req, res) => {
+    try {
+     
+     
+      return res.status(200).json({ message: "massage" });
+    } catch (error) {
+      return res.status(500).json({ message: "massage" });
+    }
+  },
+};
+
+
+---------------------------------------------------------------------
+for postman:
+
+reset admin_password:
+
+{
+    "admin_email": "com@gmail.com",
+    "admin_password": "Aa1234"
+}
