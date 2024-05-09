@@ -14,8 +14,8 @@ module.exports = {
                 if (!isAdmin) {
 
                     // Password Encryption
-                    const hashAdmin = hash(process.env.ADMIN_PASSWORD, 10);
-
+                    const hashAdmin = await hash(process.env.ADMIN_PASSWORD, 10);
+                        console.log(hashAdmin)
                     // Create first admin
                     const firstAdmin = new Admin({
                         admin_email: process.env.ADMIN_EMAIL,
@@ -25,10 +25,10 @@ module.exports = {
                         admin_lName: "ceo"
 
                     });
-
+                    console.log(firstAdmin)
                     // Save the first admin
                     await firstAdmin.save();
-
+                    console.log("after the save")
                     // Change the flag to true   
                     isFirstAdminAdded = true;
 
