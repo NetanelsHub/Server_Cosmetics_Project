@@ -19,9 +19,11 @@ module.exports = {
 ---------------------------------------------------------------------
 for postman:
 
-reset admin_password:
-
 {
     "admin_email": "com@gmail.com",
-    "admin_password": "Aa1234"
+    "admin_password": "Aa1234",
+    "admin_fName":"dodi",
+    "admin_fName":"sol"
+    "admin_role:"Admin"
+
 }

@@ -8,19 +8,22 @@ module.exports = {
     AddFirstAdmin: async (req, res) => {
         try {
             if (!isFirstAdminAdded) {
-
+                console.log("add firs admin")
                 // Check if there is already an admin
                 const isAdmin = await Admin.findOne({ role: "Admin" });
                 if (!isAdmin) {
-                    console.log("hi")
+
                     // Password Encryption
-                    const hashAdmin = await hash(process.env.ADMIN_PASSWORD, 10);
+                    const hashAdmin = hash(process.env.ADMIN_PASSWORD, 10);
 
                     // Create first admin
                     const firstAdmin = new Admin({
                         admin_email: process.env.ADMIN_EMAIL,
                         admin_password: hashAdmin,
-                        role: "Admin"
+                        admin_role: "Admin",
+                        admin_fName: "Yossi&Nati",
+                        admin_lName: "ceo"
+
                     });
 
                     // Save the first admin
@@ -88,6 +91,7 @@ module.exports = {
             return false
         }
     },
+
     addASuperUser: async (req, res) => {
         try {
             const { admin_email, admin_password, admin_role, admin_fName, admin_lName } = req.body;
@@ -111,7 +115,7 @@ module.exports = {
             // Password Encryption
             const hashedPassword = await hash(admin_password, 10);
 
-            console.log(hashedPassword)
+            // console.log(hashedPassword)
             const newAdminManager = new Admin({
                 admin_email: admin_email,
                 admin_password: hashedPassword, // Store the hashed password
@@ -123,8 +127,7 @@ module.exports = {
             // Save the document to the database
             await newAdminManager.save();
 
-
-            return res.status(200).json({ message: "Adding admin or manager Editor successful" });
+            return res.status(200).json({ message: "Adding admin or manager Editor successful !" });
 
         } catch (error) {
             if (error.code === 11000 && error.keyPattern.admin_email) {
@@ -154,10 +157,11 @@ module.exports = {
         }
 
     },
+
     getSuperUser: async (req, res) => {
         try {
             const allUser = await Admin.find()
-            console.log(allUser)
+            // console.log(allUser)
             // if db its empty
             if (!allUser) {
                 throw new Error("Db its empty")
@@ -169,50 +173,98 @@ module.exports = {
             return res.status(500).json({ message: "Get all user failed" });
         }
     },
+
     deleteSuperUser: async (req, res) => {
         try {
             console.log(req.params.id)
             await Admin.findByIdAndDelete(req.params.id)
-            
-            return res.status(200).json({ message: "user delete successful"});
+
+            return res.status(200).json({ message: "user delete successful" });
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ message: "user delete failed"});
+            return res.status(500).json({ message: "user delete failed" });
         }
     },
-    // Reset_password: async (req, res) => {
-    //     try {
-    //         const { admin_email, admin_password } = req.body;
 
-    //         if (!admin_email || !admin_password) {
-    //             throw new Error("You need to provide both email and new password.");
-    //         }
+    updateSuperUser: async (req, res) => {
+        try {
+            console.log("hi", req.params.id)
+            const id = req.params.id
+            const { admin_email, admin_password, admin_fName, admin_lName, admin_role } = req.body
 
-    //         const admin = await Admin.findOne({ admin_email });
+            // console.log(req.body)
 
-    //         if (!admin) {
-    //             throw new Error("Sorry, there is no such user.");
-    //         }
+            if (!admin_email || !admin_password || !admin_fName || !admin_lName || !admin_role) {
+                throw new Error("You need to insert all credentials.");
+            }
 
-    //         // Hash the new password
-    //         const hashedPassword = await hash(admin_password, 10);
+             // Validate the new password
+             const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
+             if (!passwordRegex.test(admin_password)) {
+                 throw new Error("Password must contain at least one digit, one lowercase letter, one uppercase letter, and be at least 5 characters long.");
+             }
+ 
+             // Validate the email address
+             const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+             if (!emailRegex.test(admin_email)) {
+                 throw new Error("Invalid email address format.");
+             }
 
-    //         // Validate the new password
-    //         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
-    //         if (!passwordRegex.test(admin_password)) {
-    //             throw new Error("Password must contain at least one digit, one lowercase letter, one uppercase letter, and be at least 5 characters long.");
-    //         }
+            // Hash the new password
+            const hashedPassword = await hash(admin_password, 10);
 
-    //         // Update the password only if it meets the criteria
-    //         admin.admin_password = hashedPassword;
+            // Update the user 
+            const new_info = {
+                admin_email : admin_email,
+                admin_password: hashedPassword,
+                admin_fName : admin_fName,
+                admin_lName : admin_lName,
+                admin_role : admin_role
+            }
 
-    //         // Save the updated admin
-    //         await admin.save();
+            const after_Update = await Admin.findByIdAndUpdate(id,new_info)
+            console.log("after updat:", after_Update)
 
-    //         return res.status(200).json({ message: "Password reset successfully." });
-    //     } catch (error) {
-    //         return res.status(500).json({ error: error.message });
-    //     }
-    // },
-   
-};
+            return res.status(200).json({ message: "user update successful" });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "user update failed" });
+        }
+    }
+
+}
+
+// Reset_password: async (req, res) => {
+//     try {
+//         const { admin_email, admin_password } = req.body;
+
+//         if (!admin_email || !admin_password) {
+//             throw new Error("You need to provide both email and new password.");
+//         }
+
+//         const admin = await Admin.findOne({ admin_email });
+
+//         if (!admin) {
+//             throw new Error("Sorry, there is no such user.");
+//         }
+
+//         // Hash the new password
+//         const hashedPassword = await hash(admin_password, 10);
+
+//         // Validate the new password
+//         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
+//         if (!passwordRegex.test(admin_password)) {
+//             throw new Error("Password must contain at least one digit, one lowercase letter, one uppercase letter, and be at least 5 characters long.");
+//         }
+
+//         // Update the password only if it meets the criteria
+//         admin.admin_password = hashedPassword;
+
+//         // Save the updated admin
+//         await admin.save();
+
+//         return res.status(200).json({ message: "Password reset successfully." });
+//     } catch (error) {
+//         return res.status(500).json({ error: error.message });
+//     }
+// },

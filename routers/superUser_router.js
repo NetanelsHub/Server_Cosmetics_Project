@@ -1,5 +1,5 @@
 const router = require("express").Router()
-const {AddFirstAdmin,loginAdmin,autoAdmin,addASuperUser,getSuperUser,deleteSuperUser} = require("../controller/admin_controller")
+const {AddFirstAdmin,loginAdmin,autoAdmin,addASuperUser,getSuperUser,deleteSuperUser,updateSuperUser} = require("../controller/admin_controller")
 const jwtAuth = require ("../middleware/jwt")
 
 
@@ -8,6 +8,8 @@ router.post("/login",loginAdmin)
 router.post("/addSuperUser",addASuperUser)
 router.get("/getSuperUser",getSuperUser)
 router.delete("/deleteSuperUser/:id",deleteSuperUser)
+router.put("/updateSuperUser/:id",updateSuperUser)
+
 // router.get("/logout",logOutAdmin)
 // router.post("/login/resetPass",Reset_password)
 
