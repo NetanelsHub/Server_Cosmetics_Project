@@ -1,7 +1,7 @@
 const Admin = require("../model/admin_model");
 const { hash, compare } = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+const{transporter} =require("../middleware/mailer")
 let isFirstAdminAdded = false;
 
 module.exports = {
@@ -127,6 +127,23 @@ module.exports = {
             // Save the document to the database
             await newAdminManager.save();
 
+
+            const mail = {
+                from:process.env.MAILER_EMAIL,
+                to:admin_email,
+                subject:`Hello ${admin_fName}`,
+                html:`<h1>Cosmetics company</h1>
+                <p>Congratulations on joining us as an ${admin_role}</p>
+                <img src="" />
+                `}
+                console.log(mail)
+                await transporter.sendMail(mail,(err, info) => {
+                if (err) {
+                    console.error('Error occurred while sending email:', err);
+                } else {
+                    console.log('Email sent successfully:', info.response);
+                }})
+
             return res.status(200).json({ message: "Adding admin or manager Editor successful !" });
 
         } catch (error) {
@@ -142,6 +159,7 @@ module.exports = {
 
     autoAdmin: async (req, res) => {
         try {
+            console.log("hii admin")
             const { id } = req.payload
             const newToken = jwt.sign({ id }, process.env.JWT_SECRET, {
                 expiresIn: 60 * 15 // 15 minutes in seconds
