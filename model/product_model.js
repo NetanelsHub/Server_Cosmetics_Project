@@ -5,16 +5,16 @@ const mongoose = require("mongoose");
 const product_schema = new mongoose.Schema({
     product_name:{
         type:String,
-        // required:true,
+        required:true,
         unique:true
     },
     product_price:{
         type:Number,
-        // required:true
+        required:true
     },
     product_description:{
         type:String,
-        // required:true
+        required:true
     },
     product_image:{
         type:String,

@@ -66,5 +66,39 @@ module.exports = {
         error: error.message,
       });
     }
-  },
+  },getAllProduct:async (req, res) =>{
+      try {
+       const products = await Product.find().populate("product_category");
+
+        return res.status(200).json({
+          message: "successfully to get products",
+          success: true,
+          products,
+        })
+      } catch (error) {
+        return res.status(500).json({
+            message: "error in get products",
+            success: false,
+            error: error.message,
+          });
+      }
+
+  },deleteProduct: async (req, res) => {
+    try {
+      const id = req.params.id;
+
+      await Product.findByIdAndDelete(id);
+
+      return res.status(200).json({
+        message: "successfully to delete product",
+        success: true,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "error in delete product",
+        success: false,
+        error: error.message,
+      });
+    }
+  }
 };
