@@ -86,7 +86,7 @@ module.exports = {
   },deleteProduct: async (req, res) => {
     try {
       const id = req.params.id;
-
+      console.log("zdsajfb",id)
       await Product.findByIdAndDelete(id);
 
       return res.status(200).json({
@@ -96,6 +96,35 @@ module.exports = {
     } catch (error) {
       return res.status(500).json({
         message: "error in delete product",
+        success: false,
+        error: error.message,
+      });
+    }
+  },  updateProduct: async (req, res) => {
+    try {
+      const id = req.params.id;
+
+      console.log(req.file);
+
+      // if (req.file) {
+      //   console.log(req.file);
+      //   const url_image = `http://localhost:3000/uploads/${req.file.filename}`;
+      //   req.body.product_image =JSON.stringify(url_image);
+      // }
+      if (req.file) {
+        const data = await cloudinary.uploader.upload(req.file.path);
+        req.body.product_image =JSON.stringify( data.secure_url);
+      }
+      const product = await Product.findByIdAndUpdate(id,req.body);
+      console.log("after")
+      return res.status(200).json({
+        message: "successfully to update product",
+        success: true,
+        product,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "error in update product",
         success: false,
         error: error.message,
       });
