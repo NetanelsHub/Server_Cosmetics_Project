@@ -46,7 +46,6 @@ module.exports = {
 
     loginAdmin: async (req, res) => {
         try {
-            console.log("hi")
             const { admin_email, admin_password } = req.body;
             console.log("email:", admin_email, admin_password)
             if (!admin_email || !admin_password) {
@@ -136,7 +135,7 @@ module.exports = {
                 <p>Congratulations on joining us as an ${admin_role}</p>
                 <img src="" />
                 `}
-                console.log(mail)
+               
                 await transporter.sendMail(mail,(err, info) => {
                 if (err) {
                     console.error('Error occurred while sending email:', err);
@@ -159,7 +158,6 @@ module.exports = {
 
     autoAdmin: async (req, res) => {
         try {
-            console.log("hii admin")
             const { id } = req.payload
             const newToken = jwt.sign({ id }, process.env.JWT_SECRET, {
                 expiresIn: 60 * 15 // 15 minutes in seconds
