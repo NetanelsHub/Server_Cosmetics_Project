@@ -99,7 +99,7 @@ module.exports = {
      })
 
         // set cookie
-        res.cookie("token", token, { maxAge: 1000 * 60 * 15 })
+        res.cookie("token", token, { maxAge: 1000 * 60 * 15 , httpOnly:true})
 
 
         return res.status(200).json({ token: token });
@@ -151,7 +151,7 @@ module.exports = {
      const { tokens } = await Client.findById(id);
 
       const newToken = jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: 60 * 60 * 3,
+        expiresIn: 60 * 15,
       });
 
       const newTokens = tokens.filter(t => t.token !== req.token);

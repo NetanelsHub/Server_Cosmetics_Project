@@ -164,7 +164,7 @@ module.exports = {
             })
 
             // set cookie
-            res.cookie("token", newToken, { maxAge: 1000 * 60 * 15 })
+            res.cookie("token", newToken, { maxAge: 1000 * 60 * 15 , httpOnly:true})
 
             return res.status(200).json({ token: newToken });
         } catch (error) {
