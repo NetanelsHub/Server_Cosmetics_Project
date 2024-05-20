@@ -11,6 +11,8 @@ const port = process.env.PORT
 const superUser = require("./routers/superUser_router")
 const category_router = require("./routers/categories_router");
 const product_router = require("./routers/product_router");
+const client_router = require("./routers/client_router");
+
 
 app.use(cors({
     origin: process.env.CLIENT_ADMIN_URL,
@@ -25,6 +27,8 @@ app.use(express.static(path.join(__dirname,"public")))
 app.use("/user",superUser)
 app.use("/categories",category_router)
 app.use("/products",product_router)
+app.use("/client",client_router)
+
 
 
 app.listen(port,() => console.log(`server is running on port ${port}`))
