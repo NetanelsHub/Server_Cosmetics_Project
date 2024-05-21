@@ -200,8 +200,6 @@ module.exports = {
   deleteClients: async (req, res) => {
     try {
       const id = req.params.id;
-      //664b89857718b09c35a36d64
-      console.log("id:",id)
     
       await Client.findByIdAndDelete(id);
 
@@ -217,19 +215,5 @@ module.exports = {
       });
     }
   },  
-  
 
-  // try {
-
-  //   const allClient = await Client.find();
-
-  //     if (!allClient) {
-  //         throw new Error("Db its empty")
-  //     }
-
-  //     return res.status(200).json({ message: "Get all Client successful", allClient });
-  // } catch (error) {
-  //     console.error(error);
-  //     return res.status(500).json({ message: "Get all Client failed" });
-  // }
 };
