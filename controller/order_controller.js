@@ -23,7 +23,7 @@ module.exports = {
     },
     getOrder: async (req, res) => {
         try {
-            const orders = await Order.find().populate('Clients').populate('Products');
+            const orders = await Order.find().populate('clientId').populate('products');
             res.status(200).json(orders);
         } catch (error) {
             res.status(500).json({ message: error.message });
