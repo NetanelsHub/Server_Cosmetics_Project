@@ -46,6 +46,42 @@ addCategory:async (req,res) =>{
             error: error.message,
           });
     }
-}
+},deleteCategory: async (req, res) => {
+    try {
+      const id = req.params.id;
+    
+      await Category.findByIdAndDelete(id);
+
+      return res.status(200).json({
+        message: "successfully to delete Category",
+        success: true,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "error in delete Category",
+        success: false,
+        error: error.message,
+      });
+    }
+  },updateCategory: async (req, res) => {
+    try {
+      const id = req.params.id;
+     console.log(req.body)
+     console.log(id)
+     const edit = await Category.findByIdAndUpdate(id,req.body);
+     console.log(edit)
+      return res.status(200).json({
+        message: "successfully to update Category",
+        success: true,
+        edit
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "error in update Category",
+        success: false,
+        error: error.message,
+      });
+    }
+  }
 
 }

@@ -60,7 +60,7 @@ const order_schema = new mongoose.Schema({
 
 order_schema.pre("save", function (next) {
     this.total_price = this.products.reduce((total, product) => {
-        return total + product.RTP * product.quantity;
+        return total + (product.RTP * product.quantity);
     }, 0)
 
     next();

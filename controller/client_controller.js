@@ -214,6 +214,54 @@ module.exports = {
         error: error.message,
       });
     }
-  },  
+  },
+  updateClient: async (req, res) => {
+    try {
+      const id = req.params.id
+      const { client_email, client_password, client_fName, client_lName } = req.body
+    
+      if (!client_email || !client_password || !client_fName || !client_lName) {
+        throw new Error("You need to insert all credentials.");
+      }
+      
+      // Validate the new password
+      const passwordRegex = /^(?=.\d)(?=.[a-z])(?=.*[A-Z]).{5,}$/;
+      if (!passwordRegex.test(client_password)) {
+        throw new Error("Password must contain at least one digit, one lowercase letter, one uppercase letter, and be at least 5 characters long.");
+      }
 
-};
+      // Validate the email address
+      const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+      if (!emailRegex.test(client_email)) {
+        throw new Error("Invalid email address format.");
+      }
+
+      // Hash the new password
+      const hashedPassword = await hash(client_password, 10);
+
+      // Update the user 
+      const new_info = {
+        client_email: client_email,
+        client_password: hashedPassword,
+        client_fName: client_fName,
+        client_lName: client_lName,
+      }
+
+      const after_Update = await Client.findByIdAndUpdate(id, new_info) 
+
+      return res.status(200).json({
+        message: "client update successful",
+        success: true,
+        after_Update
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "client update failed",
+        success: false,
+        error: error.message,
+      });
+    }
+  }
+}  
+
+;

@@ -95,9 +95,9 @@ module.exports = {
         try {
             const { admin_email, admin_password, admin_role, admin_fName, admin_lName } = req.body;
             // console.log(role)
-            if (!admin_email || !admin_password || !admin_role || !admin_fName || !admin_lName) {
-                throw new Error("You need to insert all credentials.");
-            }
+            // if (!admin_email || !admin_password || !admin_role || !admin_fName || !admin_lName) {
+            //     throw new Error("You need to insert all credentials.");
+            // }
 
             // Validate the new password
             const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
