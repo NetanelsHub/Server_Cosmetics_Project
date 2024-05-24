@@ -179,7 +179,7 @@ module.exports = {
   getAllClients: async (req, res) => {
     try {
       const allClients = await Client.find();
-      console.log("all client", allClients);
+      // console.log("all client", allClients);
       if (!allClients) {
         throw new Error("Db its empty");
       }
@@ -217,32 +217,27 @@ module.exports = {
   },
   updateClient: async (req, res) => {
     try {
+     
       const id = req.params.id
+      
       const { client_email, client_password, client_fName, client_lName } = req.body
-    
+      console.log("update pass:",client_password)
       if (!client_email || !client_password || !client_fName || !client_lName) {
         throw new Error("You need to insert all credentials.");
       }
-      
-      // Validate the new password
-      const passwordRegex = /^(?=.\d)(?=.[a-z])(?=.*[A-Z]).{5,}$/;
-      if (!passwordRegex.test(client_password)) {
-        throw new Error("Password must contain at least one digit, one lowercase letter, one uppercase letter, and be at least 5 characters long.");
-      }
-
+    
       // Validate the email address
       const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
       if (!emailRegex.test(client_email)) {
         throw new Error("Invalid email address format.");
       }
-
-      // Hash the new password
-      const hashedPassword = await hash(client_password, 10);
-
-      // Update the user 
+      
+      // Update the user. 
+      // because we not allowed the admin to change the password 
+      // we insert the pass word as is 
       const new_info = {
         client_email: client_email,
-        client_password: hashedPassword,
+        client_password: client_password,
         client_fName: client_fName,
         client_lName: client_lName,
       }

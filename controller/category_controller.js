@@ -30,7 +30,7 @@ addCategory:async (req,res) =>{
 
 },getAllCategory:async(req,res) => {
     try {
-        
+        console.log("get ....")
         const categories = await Category.find()
 
         return res.status(200).json({

@@ -17,7 +17,7 @@ const order_router = require('./routers/order_router')
 app.use(cors({
     origin: process.env.CLIENT_ADMIN_URL,
     credentials:true,
-    optionsSuccessStatus:200
+    optionsSuccessStatus:200 
 }))
 
 app.use(express.json());

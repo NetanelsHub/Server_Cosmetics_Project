@@ -48,18 +48,19 @@ module.exports = {
         try {
             const { admin_email, admin_password } = req.body;
             console.log("email:", admin_email, admin_password)
+            
             if (!admin_email || !admin_password) {
                 throw new Error("You need to insert all credentials.");
             }
 
-            const admin = await Admin.findOne({ admin_email });
+            const admin = await Admin.findOne({ admin_email },"admin_password admin_role _id");
             console.log(admin)
-            console.log("admin work", !admin)
+            console.log("admin work", !admin)   
 
             if (!admin) {
                 throw new Error("Sorry, there is no such an user.");
             }
-
+            console.log(admin_password, admin.admin_password)
             // Checking req.body password  vs Encryption password 
             const isCompare = await compare(admin_password, admin.admin_password);
             if (!isCompare) {
@@ -83,11 +84,15 @@ module.exports = {
             res.cookie("token", token, { maxAge: 1000 * 60 * 15 })
 
 
-            return res.status(200).json({ token: token });
+            return res.status(200).json({
+                 token: token ,
+                 admin
+
+                });
         } catch (error) {
 
             console.log(error);
-            return false
+            // return false
         }
     },
 
