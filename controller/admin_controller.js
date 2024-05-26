@@ -164,6 +164,7 @@ module.exports = {
     autoAdmin: async (req, res) => {
         try {
             const { id } = req.payload
+            console.log(id)
             const newToken = jwt.sign({ id }, process.env.JWT_SECRET, {
                 expiresIn: 60 * 15 // 15 minutes in seconds
             })
@@ -177,7 +178,22 @@ module.exports = {
 
         }
 
-    },
+    },logoutAdmin: async (req, res) => {
+        try {
+          res.clearCookie("token");
+    
+          return res.status(200).json({
+            message: "successfully to logout user",
+            success: true,
+          });
+        } catch (error) {
+          return res.status(401).json({
+            message: "not authoritaion",
+            success: false,
+            error: error.message,
+          });
+        }
+      },
 
     getSuperUser: async (req, res) => {
         try {
