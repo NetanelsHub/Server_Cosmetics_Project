@@ -60,7 +60,7 @@ module.exports = {
             if (!admin) {
                 throw new Error("Sorry, there is no such an user.");
             }
-            console.log(admin_password, admin.admin_password)
+            // console.log(admin_password, admin.admin_password)  
             // Checking req.body password  vs Encryption password 
             const isCompare = await compare(admin_password, admin.admin_password);
             if (!isCompare) {

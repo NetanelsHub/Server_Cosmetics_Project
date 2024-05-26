@@ -179,7 +179,7 @@ module.exports = {
   getAllClients: async (req, res) => {
     try {
       const allClients = await Client.find();
-      // console.log("all client", allClients);
+       console.log("all client", allClients);
       if (!allClients) {
         throw new Error("Db its empty");
       }
