@@ -107,7 +107,7 @@ module.exports = {
     try {
       const id = req.params.id;
 
-
+         
       if (req.file) {
         const data = await cloudinary.uploader.upload(req.file.path);
         req.body.product_image =data.secure_url;
@@ -129,6 +129,32 @@ module.exports = {
     } catch (error) {
       return res.status(500).json({
         message: "error in update product",
+        success: false,
+        error: error.message,
+      });
+    }
+  },
+  getProductsByCategory: async (req, res) => {
+    try {
+      const name = req.query.Search;
+
+        
+      console.log(name)
+
+      const category = await Category.findOne({category_name:name})
+      if (!category) {throw new Error("Category not found")}
+      const {_id} = category
+
+      const productsByCategory = await Product.find({product_category:_id});
+
+      return res.status(200).json({
+        message: "successfully to get Products By Category",
+        success: true,
+        productsByCategory
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "error in get Products By Category",
         success: false,
         error: error.message,
       });
