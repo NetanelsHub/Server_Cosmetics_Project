@@ -70,12 +70,20 @@ module.exports = {
     }
   },getAllProduct:async (req, res) =>{
       try {
-       const products = await Product.find().populate("product_category");
+
+        const { page = 1 , limit = 5 } = req.query;
+
+        const count = await Product.countDocuments();
+
+       const pages = Math.ceil(count / limit);
+
+       const products = await Product.find().skip((page - 1) * limit).limit(limit).populate("product_category");
 
         return res.status(200).json({
           message: "successfully to get products",
           success: true,
           products,
+          pages
         })
       } catch (error) {
         return res.status(500).json({

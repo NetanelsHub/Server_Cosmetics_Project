@@ -3,6 +3,9 @@ const { hash, compare } = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const{transporter} =require("../middleware/mailer")
 let isFirstAdminAdded = false;
+const crypto = require("crypto");
+const Token = require("../model/forpass_admin_model");
+
 
 module.exports = {
     AddFirstAdmin: async (req, res) => {
@@ -267,41 +270,86 @@ module.exports = {
             console.error(error);
             return res.status(500).json({ message: "user update failed" });
         }
-    }
+    },
+    ForgotPassword: async (req, res) => {
+        try {
+          const admin = await Admin.findOne({ admin_email: req.body.email });
+         
+          if (!admin) {
+            throw new Error("Email not exist");
+          }
+          const token = await Token.findOne({ adminId: admin._id });
+    
+          if (token) await token.deleteOne();
+       
+          const resetToken = crypto.randomBytes(32).toString("hex");
+          
+          const hashPass = await hash(resetToken, 10);
+    
+          await new Token({
+            adminId: admin._id,
+            token: hashPass,
+            createdAt: Date.now(),
+          }).save();
+    
+          //sendEmail
+          await transporter.sendMail({
+            from: process.env.MAILER_EMAIL,
+            to: admin.admin_email,
+            subject: "Reset Password",
+            html: `<a href="http://localhost:5173/resetPassword?token=${resetToken}&uid=${admin._id}">לחץ כאן</a>
+            `,
+          });
+    
+          return res.status(200).json({
+            message: "successfully to send email",
+            success: true,
+          });
+        } catch (error) {
+          return res.status(401).json({
+            message: "not authoritaion",
+            success: false,
+            error: error.message,
+          });
+        }
+      },
+      ResetPassword: async (req, res) => {
+        try {
+          const { uid, token } = req.query;
+          const { password } = req.body;
+    
+          const passwordResetToken = await Token.findOne({ adminId: uid });
+          if (!passwordResetToken) {
+            throw new Error("Invalid or expired password reset token");
+          }
+          const isValid = await compare(token, passwordResetToken.token);
+          if (!isValid) {
+            throw new Error("Invalid or expired password reset token");
+          }
+          const hashed = await hash(password, 10);
+    
+          const admin = await Admin.findByIdAndUpdate(
+            uid,
+            {
+              admin_password: hashed,
+            },
+            { new: true }
+          );
+          // // if good
+          await passwordResetToken.deleteOne();
+    
+          return res.status(200).json({
+            message: "successfully to update password user",
+            success: true,
+          });
+        } catch (error) {
+          return res.status(401).json({
+            message: "not authoritaion",
+            success: false,
+            error: error.message,
+          });
+        }
+      }
 
 }
 
-// Reset_password: async (req, res) => {
-//     try {
-//         const { admin_email, admin_password } = req.body;
-
-//         if (!admin_email || !admin_password) {
-//             throw new Error("You need to provide both email and new password.");
-//         }
-
-//         const admin = await Admin.findOne({ admin_email });
-
-//         if (!admin) {
-//             throw new Error("Sorry, there is no such user.");
-//         }
-
-//         // Hash the new password
-//         const hashedPassword = await hash(admin_password, 10);
-
-//         // Validate the new password
-//         const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}$/;
-//         if (!passwordRegex.test(admin_password)) {
-//             throw new Error("Password must contain at least one digit, one lowercase letter, one uppercase letter, and be at least 5 characters long.");
-//         }
-
-//         // Update the password only if it meets the criteria
-//         admin.admin_password = hashedPassword;
-
-//         // Save the updated admin
-//         await admin.save();
-
-//         return res.status(200).json({ message: "Password reset successfully." });
-//     } catch (error) {
-//         return res.status(500).json({ error: error.message });
-//     }
-// },
