@@ -5,7 +5,7 @@ const{transporter} =require("../middleware/mailer")
 let isFirstAdminAdded = false;
 const crypto = require("crypto");
 const Token = require("../model/forpass_admin_model");
-
+// const logo = require("../public/uploads/logo.webp")
 
 module.exports = {
     AddFirstAdmin: async (req, res) => {
