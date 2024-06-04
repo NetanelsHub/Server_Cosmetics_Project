@@ -103,7 +103,11 @@ module.exports = {
       // set cookie
       res.cookie("token", token, { maxAge: 1000 * 60 * 15, httpOnly: true });
 
-      return res.status(200).json({ token: token });
+      return res.status(200).json({ 
+        token: token,
+        success: true,
+        client
+       });
     } catch (error) {
       console.log(error);
       return false;
