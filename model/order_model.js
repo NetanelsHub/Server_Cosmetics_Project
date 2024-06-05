@@ -26,6 +26,11 @@ const order_schema = new mongoose.Schema({
                 trim: true,
                 // required: true
             },
+            apartment: {
+                type: String,
+                trim: true,
+                // required: true
+            },
         }
     },
     total_price: {

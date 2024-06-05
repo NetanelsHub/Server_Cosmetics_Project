@@ -107,7 +107,7 @@ module.exports = {
         token: token,
         success: true,
         client
-       });
+      });
     } catch (error) {
       console.log(error);
       return false;
@@ -142,7 +142,7 @@ module.exports = {
         error: error.message,
       });
     }
-  },
+   },
   authClient: async (req, res) => {
     try {
       const { id } = req.payload;
