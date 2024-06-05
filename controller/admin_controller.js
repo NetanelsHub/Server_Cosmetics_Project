@@ -98,6 +98,50 @@ module.exports = {
             // return false
         }
     },
+    loginWithGoogle: async (req, res) => {
+        try {
+            console.log(req.body)
+            const { admin_email } = req.body;
+            console.log(admin_email)
+            if (!admin_email ) {
+                throw new Error("You need to insert all credentials.");
+            }
+
+            const admin = await Admin.findOne({ admin_email },"admin_password admin_role _id");
+            console.log(admin)
+            console.log("admin work", !admin)   
+
+            if (!admin) {
+                throw new Error("Sorry, there is no such an user.");
+            }
+
+            // Add token: payload, secret word, time for token
+            const payload = { id: admin._id };
+            const token = jwt.sign(payload, process.env.JWT_SECRET, {
+                expiresIn: 60 * 15 // 15 minutes in seconds
+            });
+
+            //add token to object
+            admin.token = token
+
+            // Save the updated admin
+            await admin.save()
+
+            // set cookie
+            res.cookie("token", token, { maxAge: 1000 * 60 * 15 })
+
+
+            return res.status(200).json({
+                 token: token ,
+                 admin
+
+                });
+        } catch (error) {
+
+            console.log(error);
+            // return false
+        }
+    },
 
     addASuperUser: async (req, res) => {
         try {
