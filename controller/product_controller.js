@@ -25,7 +25,7 @@ module.exports = {
 
       const {
         product_name,
-        product_price,
+        product_price_before_discount,
         product_description,
         product_image,
         product_amount,
@@ -35,7 +35,7 @@ module.exports = {
      
       if (
         !product_name ||
-        !product_price ||
+        !product_price_before_discount ||
         !product_description ||
         !product_image ||
         !product_amount ||
@@ -46,7 +46,7 @@ module.exports = {
 
       const newProduct = new Product({
         product_name:product_name,
-        product_price:product_price,
+        product_price_before_discount:product_price_before_discount,
         product_description:product_description,
         product_image : product_image,
         product_amount: product_amount,
@@ -126,8 +126,8 @@ module.exports = {
       if (!category) {throw new Error("Category not found")}
       const {_id} = category
       req.body.product_category = _id
-
-      const product = await Product.findByIdAndUpdate(id,req.body);
+      console.log(req.body)
+      const product = await Product.findByIdAndUpdate(id,req.body, { new: true });
 
       return res.status(200).json({
         message: "successfully to update product",
@@ -167,5 +167,22 @@ module.exports = {
         error: error.message,
       });
     }
-  }
+  },getDiscountedProducts: async (req, res) => {
+    try {
+        const discountedProducts = await Product.find({ discount: { $gt: 0 } });
+
+        return res.status(200).json({
+            message: "Successfully retrieved discounted products",
+            success: true,
+            products: discountedProducts
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error in retrieving discounted products",
+            success: false,
+            error: error.message,
+        });
+    }
+}
+
 };
