@@ -5,7 +5,9 @@ module.exports = {
     addOrder: async (req, res) => {
         try {
             // const {} = req.body;
+            console.log("i am in order")
             const order = new Order(req.body);
+            console.log("order:",  order)
             await order.save();
 
             return res.status(200).json({
