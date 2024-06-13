@@ -207,7 +207,10 @@ module.exports = {
   }
   ,getTopSellingProducts: async (req, res) => {
     try {
-        const topSellingProducts = await Product.find().sort({ sales: -1 }).limit(5);
+      // כל המוצרים שאין להם הנחה מוצגים בטופ סייל
+      const topSellingProducts = await Product.find({ product_discount: { $exists: false } })
+      .sort({ sales: -1 })
+      .limit(5)
 
         return res.status(200).json({
             message: "Successfully retrieved top selling products",
