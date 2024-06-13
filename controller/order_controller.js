@@ -1,10 +1,20 @@
 const Order = require('../model/order_model');
+const Product = require("../model/product_model");
 
 module.exports = {
 
     addOrder: async (req, res) => {
         try {
-            // const {} = req.body;
+            const{ products }=req.body
+
+           // עדכון כמות המכירות והמלאי של כל מוצר
+        for (const item of products) {
+          const product = await Product.findById(item.productId);
+          product.sales += item.quantity;
+          product.product_amount -= item.quantity;
+          await product.save();
+      }
+
             console.log("i am in order")
             const order = new Order(req.body);
             console.log("order:",  order)
