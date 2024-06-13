@@ -2,6 +2,8 @@ const Client = require("../model/client_model");
 const { hash, compare } = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { transporter } = require("../middleware/mailer");
+const crypto = require("crypto");
+const Token = require("../model/forgot_password_model");
 
 module.exports = {
   registerClient: async (req, res) => {
@@ -182,25 +184,45 @@ module.exports = {
   },
   getAllClients: async (req, res) => {
     try {
-      const allClients = await Client.find();
-       console.log("all client", allClients);
-      if (!allClients) {
-        throw new Error("Db its empty");
-      }
-      return res.status(200).json({
-        message: "Get all Client successful",
-        success: true,
-        allClients,
-      });
+        // קבלת הפרמטרים מהבקשה
+        const { page = 1, limit = 7, searchEmail } = req.query;
+
+        // יצירת שאילתה ריקה
+        const query = {};
+
+
+        // הוספת סינון לפי אימייל אם קיים
+        if (searchEmail) {
+            query.client_email = { $regex: searchEmail, $options: "i" }; // מתעלם מגודל האותיות
+        }
+
+        // ספירת מספר המסמכים העונים על השאילתה
+        const count = await Client.countDocuments(query);
+        const pages = Math.ceil(count / limit);
+
+        // מציאת הלקוחות העונים על השאילתה עם הגבלה ודילוג לפי הדפדוף
+        const allClients = await Client.find(query)
+            .skip((page - 1) * limit)
+            .limit(limit);
+
+        // שליחת המידע ללקוח
+        return res.status(200).json({
+            message: "Get all Client successful",
+            success: true,
+            allClients,
+            pages
+        });
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        message: "Get all Client failed",
-        success: false,
-        error: error.message,
-      });
+        // טיפול בשגיאות
+        console.error(error);
+        return res.status(500).json({
+            message: "Get all Client failed",
+            success: false,
+            error: error.message,
+        });
     }
-  },
+}
+,
   deleteClients: async (req, res) => {
     try {
       const id = req.params.id;
@@ -260,7 +282,87 @@ module.exports = {
         error: error.message,
       });
     }
-  }
+  },  
+  ForgotPassword: async (req, res) => {
+    try {
+        console.log(req.body)
+      const client = await Client.findOne({ client_email: req.body.client_email });
+    
+      if (!client) {
+        throw new Error("Email not exist");
+      }
+      const token = await Token.findOne({ clientId: client._id });
+
+      if (token) await token.deleteOne();
+
+      const resetToken = crypto.randomBytes(32).toString("hex");
+
+      const hashPass = await hash(resetToken, 10);
+
+      await new Token({
+        clientId: client._id,
+        token: hashPass,
+        createdAt: Date.now(),
+      }).save();
+
+      //sendEmail
+      await transporter.sendMail({
+        from: process.env.MAILER_EMAIL,
+        to: client.client_email,
+        subject: "Reset Password",
+        html: `<a href="http://localhost:5173/resetPassword?token=${resetToken}&uid=${client._id}">לחץ כאן</a>
+            `,
+      });
+
+      return res.status(200).json({
+        message: "successfully to send email",
+        success: true,
+      });
+    } catch (error) {
+      return res.status(401).json({
+        message: "not authoritaion",
+        success: false,
+        error: error.message,
+      });
+    }
+  },
+  ResetPassword: async (req, res) => {
+    try {
+      const { uid, token } = req.query;
+      const { password } = req.body;
+
+      const passwordResetToken = await Token.findOne({ clientId: uid });
+      if (!passwordResetToken) {
+        throw new Error("Invalid or expired password reset token");
+      }
+      const isValid = await compare(token, passwordResetToken.token);
+      if (!isValid) {
+        throw new Error("Invalid or expired password reset token");
+      }
+      const hashed = await hash(password, 10);
+
+      const client = await Client.findByIdAndUpdate(
+        uid,
+        {
+          client_password: hashed,
+        },
+        { new: true }
+      );
+      // // if good
+      await passwordResetToken.deleteOne();
+
+      return res.status(200).json({
+        message: "successfully to update password user",
+        success: true,
+      });
+    } catch (error) {
+      return res.status(401).json({
+        message: "not authoritaion",
+        success: false,
+        error: error.message,
+      });
+    }
+  },
 }  
 
 ;

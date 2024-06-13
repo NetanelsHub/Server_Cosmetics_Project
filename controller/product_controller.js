@@ -9,7 +9,7 @@ cloudinary.config({
 });
 
 module.exports = {
-  addProduct: async (req, res) => {
+   addProduct: async (req, res) => {
     try {
       console.log(req.file)
       console.log(req.body)
@@ -68,35 +68,55 @@ module.exports = {
         error: error.message,
       });
     }
-  },getAllProduct:async (req, res) =>{
-      try {
-
-        const { page = 1 , limit = 5 } = req.query;
-
-        const count = await Product.countDocuments();
-
-       const pages = Math.ceil(count / limit);
-
-       const products = await Product.find().skip((page - 1) * limit).limit(limit).populate("product_category");
-
-        return res.status(200).json({
-          message: "successfully to get products",
-          success: true,
-          products,
-          pages
-        })
-      } catch (error) {
-        return res.status(500).json({
-            message: "error in get products",
-            success: false,
-            error: error.message,
-          });
+  }
+  ,getAllProduct: async (req, res) => {
+    try {
+      // קבלת הפרמטרים מהבקשה
+      const { page = 1, limit = 5, search, price } = req.query;
+  
+      // יצירת שאילתה ריקה
+      const query = {};
+  
+      // הוספת סינון לפי שם מוצר אם קיים
+      if (search) {
+        query.product_name = { $regex: search, $options: "i" }; // מתעלם מגודל האותיות
       }
-
-  },deleteProduct: async (req, res) => {
+  
+      // הוספת סינון לפי מחיר אם קיים
+      if (price) {
+        query.product_price_before_discount = { $lte: price };
+      }
+  
+      // ספירת מספר המסמכים העונים על השאילתה
+      const count = await Product.countDocuments(query);
+      const pages = Math.ceil(count / limit);
+  
+      // מציאת המוצרים העונים על השאילתה עם הגבלה ודילוג לפי הדפדוף
+      const products = await Product.find(query)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .populate("product_category");
+  
+      // שליחת המידע ללקוח
+      return res.status(200).json({
+        message: "successfully to get products",
+        success: true,
+        products,
+        pages
+      });
+    } catch (error) {
+      // טיפול בשגיאות
+      return res.status(500).json({
+        message: "error in get products",
+        success: false,
+        error: error.message,
+      });
+    }
+  }
+  ,deleteProduct: async (req, res) => {
     try {
       const id = req.params.id;
-      // console.log("zdsajfb",id)
+     
       await Product.findByIdAndDelete(id);
 
       return res.status(200).json({
@@ -167,10 +187,11 @@ module.exports = {
         error: error.message,
       });
     }
-  },getDiscountedProducts: async (req, res) => {
+  }
+  ,getDiscountedProducts: async (req, res) => {
     try {
-        const discountedProducts = await Product.find({ discount: { $gt: 0 } });
-
+        const discountedProducts = await Product.find({ product_discount: { $gt: 0 } });
+         console.log(discountedProducts)
         return res.status(200).json({
             message: "Successfully retrieved discounted products",
             success: true,
@@ -183,6 +204,24 @@ module.exports = {
             error: error.message,
         });
     }
-}
+  }
+  ,getTopSellingProducts: async (req, res) => {
+    try {
+        const topSellingProducts = await Product.find().sort({ sales: -1 }).limit(5);
 
-};
+        return res.status(200).json({
+            message: "Successfully retrieved top selling products",
+            success: true,
+            products: topSellingProducts
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error in retrieving top selling products",
+            success: false,
+            error: error.message,
+        });
+    }
+
+ },
+
+}
