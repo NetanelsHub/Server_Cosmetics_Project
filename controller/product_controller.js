@@ -208,7 +208,7 @@ module.exports = {
   ,getTopSellingProducts: async (req, res) => {
     try {
       // כל המוצרים שאין להם הנחה מוצגים בטופ סייל
-      const topSellingProducts = await Product.find({ product_discount: { $exists: false } })
+      const topSellingProducts = await Product.find({ product_discount: { $gt: 0 }  })
       .sort({ sales: -1 })
       .limit(5)
 
