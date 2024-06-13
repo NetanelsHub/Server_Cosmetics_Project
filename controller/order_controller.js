@@ -11,7 +11,6 @@ module.exports = {
         for (const item of products) {
           const product = await Product.findById(item.productId);
           product.sales += item.quantity;
-          product.product_amount -= item.quantity;
           await product.save();
       }
 
