@@ -5,7 +5,7 @@ const { transporter } = require("../middleware/mailer");
 let isFirstAdminAdded = false;
 const crypto = require("crypto");
 const Token = require("../model/forgot_password_model");
-// const logo = require("../public/uploads/logo.webp")
+
 
 module.exports = {
   AddFirstAdmin: async (req, res) => {
@@ -193,16 +193,74 @@ module.exports = {
       // Save the document to the database
       await newAdminManager.save();
 
+
       const mail = {
         from: process.env.MAILER_EMAIL,
         to: admin_email,
-        subject: `Hello ${admin_fName}`,
-        html: `<h1>Cosmetics company</h1>
-                <p>Congratulations on joining us as an ${admin_role}</p>
-                <img src="" />
-                `,
-      };
+        subject: `Welcome to Cosmetics Company`,
+        html: `
+          <html>
+          <head>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                margin: 0;
+                padding: 0;
+              }
+              .container {
+                max-width: 600px;
+                margin: 20px auto;
+                padding: 20px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+              }
+              .header {
+                text-align: center;
+                margin-bottom: 20px;
+              }
+              .content {
+                margin-bottom: 20px;
+              }
+              .instructions {
+                background-color: #f7f7f7;
+                padding: 10px;
+                border-radius: 4px;
+                margin-bottom: 20px;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="header">
+                <img  src=${"https://res.cloudinary.com/dijj34ady/image/upload/v1718875826/sinleidftnkhskxvtjy1.png"} style=""max-width: 200px; height: 50px;">
+                <h1>Welcome to Mineral cosmetics</h1>
+              </div>
+              <div class="content">
+                <p>Dear ${admin_fName},</p>
+                <p>Welcome to our team at Mineral cosmetics Company! We are delighted to have you on board as our new ${admin_role}.</p>
+                <div class="instructions">
+                  <p>Before your first day, please review the following:</p>
+                  <ul>
+                    <li>Company policies and procedures</li>
+                    <li>Team introductions and contacts</li>
+                    <li>First day orientation schedule</li>
+                  </ul>
+                </div>
+                <p>If you have any questions, feel free to reach out to us.</p>
+              </div>
+              <div class="footer">
+                <p>We look forward to working together and achieving great success!</p>
+                <p>Best regards,</p>
+                <p>Mineral cosmetics</p>
+              </div>
+            </div>
+          </body>
+          </html>
+        `,
 
+      };
+      
       await transporter.sendMail(mail, (err, info) => {
         if (err) {
           console.error("Error occurred while sending email:", err);
@@ -310,14 +368,14 @@ module.exports = {
       await Admin.findByIdAndDelete(req.params.id);
 
       return res.status(200).json({
-        message: "user delete successful",
+        message: "Admin delete successful",
         success: true,
       });
     } catch (error) {
       return res
         .status(500)
         .json({
-          message: "user delete failed",
+          message: "Admin delete failed",
           success: false,
           error: error.message,
         });
@@ -417,9 +475,29 @@ module.exports = {
         from: process.env.MAILER_EMAIL,
         to: admin.admin_email,
         subject: "Reset Password",
-        html: `<a href="http://localhost:5173/resetPassword?token=${resetToken}&uid=${admin._id}">לחץ כאן</a>
-            `,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
+            <div style="text-align: center; padding: 10px;">
+              <img src=${"https://res.cloudinary.com/dijj34ady/image/upload/v1718875826/sinleidftnkhskxvtjy1.png"} alt="Mineral cosmetics" style="max-width: 200px; height: auto;">
+            </div>
+            <div style="padding: 20px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+              <h2 style="color: #333;">Reset Your Password</h2>
+              <p style="color: #666;">Hello,</p>
+              <p style="color: #666;">We received a request to reset your password. Click the button below to reset it.</p>
+              <div style="text-align: center; margin: 20px 0;">
+                <a href="http://localhost:5173/resetPassword?token=${resetToken}&uid=${admin._id}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a>
+              </div>
+              <p style="color: #666;">If you didn't request a password reset, please ignore this email or contact support if you have questions.</p>
+              <p style="color: #666;">Thank you,<br>Mineral cosmetics</p>
+            </div>
+            <div style="text-align: center; padding: 10px; margin-top: 20px; border-top: 1px solid #ddd;">
+              <p style="color: #999;">&copy; 2024 Mineral cosmetics. All rights reserved.</p>
+              <p style="color: #999;"><a href="https://your-company-website.com" style="color: #007bff; text-decoration: none;">Visit our website</a></p>
+            </div>
+          </div>
+        `,
       });
+      
 
       return res.status(200).json({
         message: "successfully to send email",
@@ -448,7 +526,7 @@ module.exports = {
       }
       const hashed = await hash(password, 10);
 
-      const admin = await Admin.findByIdAndUpdate(
+      const admin = await Admin.findByIdAndUpdate( 
         uid,
         {
           admin_password: hashed,

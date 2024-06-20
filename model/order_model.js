@@ -57,8 +57,8 @@ const order_schema = new mongoose.Schema({
     ],
     status: {
         type: Number,
-        default: 1,
-        min: [1, "minimom 1"],
+        default: 0,
+        min: [0, "min 0"],
         max: [4, "max 4"],
     }
 }, { timestamps: true });
