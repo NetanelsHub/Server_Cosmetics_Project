@@ -10,7 +10,7 @@ const product_schema = new mongoose.Schema({
     },
     product_price_before_discount:{
         type:Number,
-        required:true
+        // required:true
     },
     product_price:{
         type:Number,
