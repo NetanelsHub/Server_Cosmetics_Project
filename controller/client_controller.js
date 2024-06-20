@@ -310,8 +310,27 @@ module.exports = {
         from: process.env.MAILER_EMAIL,
         to: client.client_email,
         subject: "Reset Password",
-        html: `<a href="http://localhost:5173/resetPassword?token=${resetToken}&uid=${client._id}">לחץ כאן</a>
-            `,
+        html:  `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
+          <div style="text-align: center; padding: 10px;">
+            <img src=${"https://res.cloudinary.com/dijj34ady/image/upload/v1718875826/sinleidftnkhskxvtjy1.png"} alt="Mineral cosmetics" style="max-width: 200px; height: auto;">
+          </div>
+          <div style="padding: 20px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+            <h2 style="color: #333;">Reset Your Password</h2>
+            <p style="color: #666;">Hello,</p>
+            <p style="color: #666;">We received a request to reset your password. Click the button below to reset it.</p>
+            <div style="text-align: center; margin: 20px 0;">
+              <a href="http://localhost:5173/resetPassword?token=${resetToken}&uid=${client._id}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">Reset Password</a>
+            </div>
+            <p style="color: #666;">If you didn't request a password reset, please ignore this email or contact support if you have questions.</p>
+            <p style="color: #666;">Thank you,<br>Mineral cosmetics</p>
+          </div>
+          <div style="text-align: center; padding: 10px; margin-top: 20px; border-top: 1px solid #ddd;">
+            <p style="color: #999;">&copy; 2024 Mineral cosmetics. All rights reserved.</p>
+            <p style="color: #999;"><a href="https://your-company-website.com" style="color: #007bff; text-decoration: none;">Visit our website</a></p>
+          </div>
+        </div>
+      `,
       });
 
       return res.status(200).json({

@@ -10,7 +10,7 @@ const generateOrderConfirmationHTML = (order) => {
 
   const productRows = products.map((product) => `
     <tr>
-      <td><img src="${product.productId.product_image}" alt="${product.productName}" style="width: 50px; height: 50px;"></td>
+      <td><img src="${product.productId.product_image}" alt="${product.productName}"></td>
       <td>${product.productId.product_name}</td>
       <td>${product.RTP}</td>
       <td>${product.quantity}</td>
@@ -60,7 +60,7 @@ const generateOrderConfirmationHTML = (order) => {
         <table class="table">
           <thead>
             <tr>
-              <th>Image</th>
+              <th >Image</th>
               <th>Product Name</th>
               <th>Price</th>
               <th>Quantity</th>
@@ -154,7 +154,11 @@ module.exports = {
     getOrder: async (req, res) => {
         try {
           
-            const orders = await Order.find().populate('clientId').populate('products');
+            const orders = await Order.find().populate('clientId').populate({
+              path: 'products.productId',
+              model: 'Products',
+              select: 'product_image product_name product_price '
+            }).populate('products');
             res.status(200).json(orders);
         } catch (error) {
             res.status(500).json({ message: error.message });
