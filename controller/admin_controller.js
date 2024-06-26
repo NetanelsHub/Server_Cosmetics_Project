@@ -233,7 +233,7 @@ module.exports = {
           <body>
             <div class="container">
               <div class="header">
-                <img  src=${"https://res.cloudinary.com/dijj34ady/image/upload/v1718875826/sinleidftnkhskxvtjy1.png"} style=""max-width: 200px; height: 50px;">
+                <img  src=${process.env.LOGO} style="max-width: 200px; height: 50px;">
                 <h1>Welcome to Mineral cosmetics</h1>
               </div>
               <div class="content">
@@ -478,7 +478,7 @@ module.exports = {
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
             <div style="text-align: center; padding: 10px;">
-              <img src=${"https://res.cloudinary.com/dijj34ady/image/upload/v1718875826/sinleidftnkhskxvtjy1.png"} alt="Mineral cosmetics" style="max-width: 200px; height: auto;">
+              <img src=${process.env.LOGO} alt="Mineral cosmetics" style="max-width: 200px; height: auto;">
             </div>
             <div style="padding: 20px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
               <h2 style="color: #333;">Reset Your Password</h2>

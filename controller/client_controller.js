@@ -184,28 +184,21 @@ module.exports = {
   },
   getAllClients: async (req, res) => {
     try {
-        // קבלת הפרמטרים מהבקשה
         const { page = 1, limit = 7, searchEmail } = req.query;
 
-        // יצירת שאילתה ריקה
         const query = {};
 
-
-        // הוספת סינון לפי אימייל אם קיים
         if (searchEmail) {
-            query.client_email = { $regex: searchEmail, $options: "i" }; // מתעלם מגודל האותיות
+            query.client_email = { $regex: searchEmail, $options: "i" };
         }
 
-        // ספירת מספר המסמכים העונים על השאילתה
         const count = await Client.countDocuments(query);
         const pages = Math.ceil(count / limit);
 
-        // מציאת הלקוחות העונים על השאילתה עם הגבלה ודילוג לפי הדפדוף
         const allClients = await Client.find(query)
             .skip((page - 1) * limit)
             .limit(limit);
 
-        // שליחת המידע ללקוח
         return res.status(200).json({
             message: "Get all Client successful",
             success: true,
@@ -313,7 +306,7 @@ module.exports = {
         html:  `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
           <div style="text-align: center; padding: 10px;">
-            <img src=${"https://res.cloudinary.com/dijj34ady/image/upload/v1718875826/sinleidftnkhskxvtjy1.png"} alt="Mineral cosmetics" style="max-width: 200px; height: auto;">
+            <img src=${process.env.LOGO} alt="Mineral cosmetics" style="max-width: 200px; height: auto;">
           </div>
           <div style="padding: 20px; background-color: #ffffff; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
             <h2 style="color: #333;">Reset Your Password</h2>
