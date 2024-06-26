@@ -71,15 +71,15 @@ module.exports = {
   }
   ,getAllProduct: async (req, res) => {
     try {
-      // קבלת הפרמטרים מהבקשה
+     
       const { page = 1, limit = 5, search, price } = req.query;
   
-      // יצירת שאילתה ריקה
+    
       const query = {};
   
-      // הוספת סינון לפי שם מוצר אם קיים
+   
       if (search) {
-        query.product_name = { $regex: search, $options: "i" }; // מתעלם מגודל האותיות
+        query.product_name = { $regex: search, $options: "i" }; 
       }
   
       // הוספת סינון לפי מחיר אם קיים

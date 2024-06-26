@@ -10,7 +10,7 @@ const generateOrderConfirmationHTML = (order) => {
 
   const productRows = products.map((product) => `
     <tr>
-      <td><img src="${product.productId.product_image}" alt="${product.productName}"></td>
+      <td><img src="${product.productId.product_image}" alt="${product.productName} style="width: 100px; height: 100px;"></td>
       <td>${product.productId.product_name}</td>
       <td>${product.RTP}</td>
       <td>${product.quantity}</td>
@@ -25,7 +25,6 @@ const generateOrderConfirmationHTML = (order) => {
         body { font-family: Arial, sans-serif; line-height: 1.6; background-color: #f9f9f9; padding: 0; margin: 0; }
         .container { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background-color: #fff; }
         .header { text-align: center; margin-bottom: 20px; }
-        .header img { max-width: 150px; }
         .content { margin-bottom: 20px; }
         .table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
         .table th, .table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
@@ -42,7 +41,7 @@ const generateOrderConfirmationHTML = (order) => {
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://res.cloudinary.com/dijj34ady/image/upload/v1718875826/sinleidftnkhskxvtjy1.png" alt="Company Logo">
+          <img src=${process.env.LOGO} alt="Company Logo style="width: 200px; height: 2000px;">
           <h1>Order Confirmation</h1>
           <p>Order Number: ${_id}</p>
         </div>
